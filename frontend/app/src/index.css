@@ -1,0 +1,21 @@
+body{
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    margin: 0; /* Removes default margin */
+    padding: 0;
+    width: auto;
+    /* text-align: center; */
+    color: #DFE0E2;
+    font-weight: 200;
+    cursor: default;
+    /* background-color: ; */
+    background-color: #002C3A;
+}
+
+
+#root{
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}

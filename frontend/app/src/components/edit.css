@@ -1,0 +1,63 @@
+/* edit.css */
+
+/* General container for the editor and button */
+.editor-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px; /* Space between editor and button */
+    padding: 20px;
+    height: 100vh;
+    box-sizing: border-box;
+  }
+  
+  /* Styling for the Monaco Editor wrapper */
+  .editor-container .monaco-editor {
+    border-radius: 8px; /* Rounded corners */
+    overflow: hidden; /* Clip content to rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  }
+  
+  /* Submit button styling */
+  .submit-button {
+    padding: 10px 20px;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    width: 69%;
+    border: none;
+    border-radius: 8px; /* Rounded corners */
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  }
+  
+  /* Hover effect for the button */
+  .submit-button:hover {
+    background-color: #0056b3; /* Darker blue */
+    transform: scale(1.01); /* Slight scaling effect */
+  }
+  
+  /* Active state for the button */
+  .submit-button:active {
+    background-color: #003f8c; /* Even darker blue */
+    
+    transform: scale(1); /* Reset scale */
+  }
+  
+  /* Responsive design for smaller screens */
+  @media (max-width: 768px) {
+    .editor-container {
+      padding: 10px;
+      gap: 15px;
+    }
+  
+    .submit-button {
+      font-size: 14px;
+      padding: 8px 16px;
+    }
+  }
+
+::-webkit-scrollbar{
+    scrollbar-width: 0px;
+    scroll-behavior: smooth;
+}
