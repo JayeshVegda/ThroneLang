@@ -161,7 +161,7 @@ COMPILE_TOKENS = {
     "summon": "import",
     "rightful": "True",
     "traitor": "False",
-    "claim": "",
+    "claim ": "",
     "send": "return"
 }
 

@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@font-face {
+    font-family: 'got';
+    src: url('./assets/got.ttf') format('truetype');
+}
+
+@theme {
+  --color-indigo-dark: oklch(0.511 0.262 276.966); 
+  --color-indigo-light: oklch(0.585 0.233 277.117); 
+  --font-got: 'got', cursive;
+  --font-cinzel: Cinzel Decorative
+}

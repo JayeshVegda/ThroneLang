@@ -4,11 +4,16 @@ import * as monaco from "monaco-editor";
 import "./edit.css";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import { PrimaryButton } from "./PrimaryButton/PrimaryButton";
 
 function Editor() {
-  const [code, setCode] = useState(""); // State for the code
-  const [output, setOutput] = useState(null); // State for dynamic output box
-  const editorRef = useRef(null); // Ref for the editor instance
+  const [code, setCode] = useState(
+    "winter_is_coming\n\n# Write your ThroneLang code here\n# Example:\n# decarys(\"Hello, Westeros!\")\n\nwinter_is_ended"
+  );
+
+  const [output, setOutput] = useState(null);
+  const editorRef = useRef(null);
+  const outputRef = useRef(null);
   const STORAGE_KEY = "monacoEditorState";
 
   const compileToken = {
@@ -59,29 +64,32 @@ function Editor() {
     const savedState = localStorage.getItem(STORAGE_KEY);
     if (savedState) {
       const { content, viewState } = JSON.parse(savedState);
-      editor.setValue(content); // Restore editor content
+      editor.setValue(content);
       if (viewState) {
-        editor.restoreViewState(viewState); // Restore view state
+        editor.restoreViewState(viewState);
       }
-      editor.focus(); // Ensure focus is set correctly
+      editor.focus();
     }
   };
 
   const options = {
-    selectOnLineNumbers: false,
-    roundedSelection: true,
+    selectOnLineNumbers: true,
+    roundedSelection: false,
     readOnly: false,
     cursorStyle: "line",
     automaticLayout: true,
-    fontSize: 16,
-    fontFamily: "Fira Code, Consolas, Menlo, monospace",
+    fontSize: 14,
+    fontFamily: "'Fira Code', Consolas, monospace",
     fontLigatures: true,
     minimap: { enabled: false },
     scrollbar: {
       useShadows: false,
-      vertical: "hidden",
-      horizontal: "hidden",
+      vertical: "auto",
+      horizontal: "auto",
     },
+    lineNumbers: "on",
+    wordWrap: "on",
+    padding: { top: 10 },
   };
 
   const handleSaveState = () => {
@@ -89,18 +97,16 @@ function Editor() {
       const viewState = editorRef.current.saveViewState();
       const content = editorRef.current.getValue();
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ content, viewState }));
-      console.log("State Saved:", { content, viewState });
     }
   };
 
   useEffect(() => {
-    // Save the editor state when the component unmounts
     return () => handleSaveState();
   }, []);
 
   const handleSubmit = async () => {
     console.log("Submitted Code:", code);
-    handleSaveState(); // Save state on submit
+    handleSaveState();
 
     try {
       const response = await fetch("http://127.0.0.1:8000/api/receive_code/", {
@@ -111,10 +117,11 @@ function Editor() {
         body: JSON.stringify({ code }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        const data = await response.json();
         console.log("Server Response:", data);
-        setOutput(data.message || "Code executed successfully!"); // Show output dynamically
+        setOutput(data.output || "Code executed successfully!");
       } else {
         console.error("Failed to submit code:", response.status);
         setOutput(`Error: Failed to submit code. Status ${response.status}`);
@@ -125,47 +132,59 @@ function Editor() {
     }
   };
 
+  // Auto-scroll to the latest output
+  useEffect(() => {
+    if (outputRef.current) {
+      outputRef.current.scrollTop = outputRef.current.scrollHeight;
+    }
+  }, [output]);
+
   return (
-    <div className="editor-container">
-      <MonacoEditor
-        width="70%"
-        height="80%"
-        language="customLang"
-        theme="customTheme"
-        value={code}
-        onChange={(newCode) => setCode(newCode)}
-        options={options}
-        editorDidMount={editorDidMount}
-      />
-      <Button
-        className="submit-button"
-        color="primary"
-        size="large"
-        onClick={handleSubmit}
-      >
-        Submit
-      </Button>
-      {output && (
-        <Box
-          className="output-container"
-          sx={{
-            marginTop: "20px",
-            width: "70%",
-            padding: "15px",
-            backgroundColor: "#1e1e1e",
-            color: "#d4d4d4",
-            borderRadius: "8px",
-            fontSize: "14px",
-            overflow: "auto",
-            maxHeight: "300px",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-          }}
+    <>
+      <div className="editor-container" id="editor-id">
+        <MonacoEditor
+          width="70%"
+          height="500px"
+          language="customLang"
+          theme="customTheme"
+          value={code}
+          onChange={setCode}
+          options={options}
+          editorDidMount={editorDidMount}
+        />
+
+        <PrimaryButton
+          className="submit-button"
+          color="primary"
+          size="large"
+          onClick={handleSubmit}
         >
-          <strong>Output:</strong>
-          <pre style={{ whiteSpace: "pre-wrap" }}>{output}</pre>
-        </Box>
-      )}
-    </div>
+          Submit
+        </PrimaryButton>
+
+        {output && (
+          <Box
+            className="output-container h-[300px] mt-5 w-[70%] p-4 bg-[#1e1e1e] text-[#d4d4d4] rounded-md text-sm shadow-lg overflow-auto"
+          >
+            <Button
+              onClick={() => setOutput(null)}
+              sx={{
+                position: "absolute",
+                top: "5px",
+                right: "10px",
+                color: "#ff4d4d",
+                fontSize: "12px",
+                minWidth: "30px",
+              }}
+            >
+              ✖
+            </Button>
+            <strong>Output:</strong>
+            <pre style={{ whiteSpace: "pre-wrap" }}>{output}</pre>
+          </Box>
+        )}
+      </div>
+    </>
   );
 }
 
